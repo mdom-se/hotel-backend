@@ -22,13 +22,13 @@ public class WSConfiguration extends WsConfigurerAdapter {
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();
         servlet.setApplicationContext(applicationContext);
         servlet.setTransformWsdlLocations(true);
-        return new ServletRegistrationBean(servlet, "/soap/*");
+        return new ServletRegistrationBean(servlet, "/hotel-ws/*");
     }
     @Bean(name = "hotels")
     public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema hotelsSchema) {
         DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
         wsdl11Definition.setPortTypeName("HotelsPort");
-        wsdl11Definition.setLocationUri("/soap");
+        wsdl11Definition.setLocationUri("/hotel-ws");
         wsdl11Definition.setTargetNamespace(WS_TARGET_NAMESPACE);
         wsdl11Definition.setSchema(hotelsSchema);
         return wsdl11Definition;
