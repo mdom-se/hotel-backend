@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,11 +21,6 @@ public class HotelRepositoryTest {
     public static final Hotel HOTEL_RECORD_1 = new Hotel()
             .setHotelName("Hotel_1")
             .setAddress("123 TestStreet1, Monterrey, N.L.")
-            .setRating(5);
-
-    public static final Hotel HOTEL_RECORD_2 = new Hotel()
-            .setHotelName("Hotel_2")
-            .setAddress("123 TestStreet2, Monterrey, N.L.")
             .setRating(5);
 
     @Autowired
@@ -51,13 +45,6 @@ public class HotelRepositoryTest {
         Assertions.assertEquals(HOTEL_NAME_UPDATE, result.getHotelName());
     }
 
-    @Test
-    public void test_find_hotel_by_name() {
-        Hotel hotel1 = hotelRepositoryTested.save(HOTEL_RECORD_1);
-        hotelRepositoryTested.save(HOTEL_RECORD_2);
-        List<Hotel> result = hotelRepositoryTested.findByHotelName(hotel1.getHotelName(), Pageable.ofSize(10));
-        Assertions.assertEquals(1, result.size());
-    }
 
     @Test
     public void test_delete_hotel() {
@@ -69,14 +56,40 @@ public class HotelRepositoryTest {
 
 
     @Test
-    public void test_get_hotel_list() {
+    public void test_get_hotel_list_by_hotel_name() {
         // scenario setup
-        Long totalRecords = 100L;
-        PageRequest pageRequest = PageRequest.of(0, 10);
-        List<Hotel> hotelList = LongStream.iterate(1, n -> n + 1)
+        final String hotelName = "%HotelRivera%";
+        final long expectedRecords = 50L;
+        final int pageSize = 10;
+        final long totalRecords = 100L;
+        final PageRequest pageRequest = PageRequest.of(0, pageSize);
+        final List<Hotel> hotelList = LongStream.iterate(1, n -> n + 1)
                 .limit(totalRecords) // 100 records
                 .mapToObj(n -> new Hotel()
-                        .setHotelName("Hotel-" + n)
+                        .setHotelName(String.format("Hotel%s-%d", n > 50 ? "Rivera" : "Concordia", n)) //To create different hotels names
+                        .setRating(5)
+                        .setAddress("Test address")
+                ).collect(Collectors.toList());
+        hotelRepositoryTested.saveAll(hotelList);
+        // Test
+        Page<Hotel> result = hotelRepositoryTested.findByHotelNameLikeIgnoreCase(hotelName, pageRequest);
+        // Verify result
+        Assertions.assertEquals(expectedRecords, result.getTotalElements());
+        Assertions.assertEquals(pageSize, result.getContent().size());
+    }
+
+
+    @Test
+    public void test_get_hotel_list() {
+        // scenario setup
+        final long expectedRecords = 100L;
+        final int pageSize = 10;
+        final long totalRecords = 100L;
+        final PageRequest pageRequest = PageRequest.of(0, pageSize);
+        final List<Hotel> hotelList = LongStream.iterate(1, n -> n + 1)
+                .limit(totalRecords) // 100 records
+                .mapToObj(n -> new Hotel()
+                        .setHotelName(String.format("Hotel%s-%d", n > 50 ? "Rivera" : "Concordia", n)) //To create different hotels names
                         .setRating(5)
                         .setAddress("Test address")
                 ).collect(Collectors.toList());
@@ -84,7 +97,7 @@ public class HotelRepositoryTest {
         // Test
         Page<Hotel> result = hotelRepositoryTested.findAll(pageRequest);
         // Verify result
-        Assertions.assertEquals(totalRecords, result.getTotalElements());
-        Assertions.assertEquals(10, result.getContent().size());
+        Assertions.assertEquals(expectedRecords, result.getTotalElements());
+        Assertions.assertEquals(pageSize, result.getContent().size());
     }
 }

@@ -1,6 +1,6 @@
 package com.demo.hotel.mapper;
 
-import com.demo.hotel.dto.HotelDto;
+import com.demo.hotel.webservice.dto.HotelDto;
 import com.demo.hotel.model.Hotel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

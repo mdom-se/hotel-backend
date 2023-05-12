@@ -1,7 +1,7 @@
 package com.demo.hotel.mapper;
 
-import com.demo.hotel.dto.HotelDto;
 import com.demo.hotel.model.Hotel;
+import com.demo.hotel.webservice.dto.HotelDto;
 
 public class HotelMapper {
 
@@ -13,11 +13,12 @@ public class HotelMapper {
         if(hotelModel == null){
             return null;
         }
-        return new HotelDto()
-                .setHotelId(hotelModel.getHotelId())
-                .setHotelName(hotelModel.getHotelName())
-                .setAddress(hotelModel.getAddress())
-                .setRating(hotelModel.getRating());
+        HotelDto hotelDto = new HotelDto();
+        hotelDto.setHotelId(hotelModel.getHotelId());
+        hotelDto.setHotelName(hotelModel.getHotelName());
+        hotelDto.setAddress(hotelModel.getAddress());
+        hotelDto.setRating(hotelModel.getRating());
+        return hotelDto;
     }
 
     public static Hotel mapToModel(HotelDto hotelDto){

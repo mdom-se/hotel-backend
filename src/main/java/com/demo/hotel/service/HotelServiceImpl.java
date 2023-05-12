@@ -1,19 +1,21 @@
 package com.demo.hotel.service;
 
-import com.demo.hotel.dto.HotelDto;
-import com.demo.hotel.dto.HotelListDto;
+
 import com.demo.hotel.mapper.HotelMapper;
 import com.demo.hotel.model.Hotel;
 import com.demo.hotel.repository.HotelRepository;
+import com.demo.hotel.webservice.dto.HotelDto;
+import com.demo.hotel.webservice.dto.HotelListDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class HotelServiceImpl implements HotelService {
     private static final Logger LOGGER = LoggerFactory.getLogger(HotelServiceImpl.class);
     private final HotelRepository hotelRepository;
@@ -58,21 +60,22 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
-    public List<HotelDto> findHotelsByName(String hotelName, Pageable pageable) {
-        final List<Hotel> result = hotelRepository.findByHotelName(hotelName, pageable);
-        return result.stream()
+    public HotelListDto getHotelList(String hotelName, Pageable pageable) {
+        Page<Hotel> result;
+        if(hotelName == null || hotelName.isEmpty()){
+            result = hotelRepository.findAll(pageable);
+        } else {
+            // String.format will generate a string %hotelName% to use in the like clause
+            result = hotelRepository.findByHotelNameLikeIgnoreCase(String.format("%%%s%%", hotelName.trim()), pageable);
+        }
+        HotelListDto hotelListDto = new HotelListDto();
+        hotelListDto.getHotelDtoList().addAll(result.getContent().stream()
                 .map(HotelMapper::mapToDto)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+        hotelListDto.setTotalPages(result.getTotalPages());
+        hotelListDto.setTotalElements(result.getTotalElements());
+        return hotelListDto;
     }
 
-    @Override
-    public HotelListDto getHotelList(Pageable pageable) {
-        Page<Hotel> result = hotelRepository.findAll(pageable);
-        return new HotelListDto()
-                .setHotelDtoList(result.getContent().stream()
-                        .map(HotelMapper::mapToDto)
-                        .collect(Collectors.toList()))
-                .setTotalPages(result.getTotalPages())
-                .setTotalElements(result.getTotalElements());
-    }
+
 }

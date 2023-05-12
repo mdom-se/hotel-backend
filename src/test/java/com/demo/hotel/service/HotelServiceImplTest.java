@@ -1,11 +1,11 @@
 package com.demo.hotel.service;
 
-import com.demo.hotel.dto.HotelDto;
-import com.demo.hotel.dto.HotelListDto;
 import com.demo.hotel.mapper.HotelMapper;
 import com.demo.hotel.model.Hotel;
 import com.demo.hotel.repository.HotelRepository;
 import com.demo.hotel.repository.HotelRepositoryTest;
+import com.demo.hotel.webservice.dto.HotelDto;
+import com.demo.hotel.webservice.dto.HotelListDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -22,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -52,11 +52,11 @@ class HotelServiceImplTest {
     void updateHotel() {
         //scenario setup
         final String hotelNameUpdated = "Hotel-1-updated";
-        final HotelDto hotelDto = new HotelDto()
-                .setHotelId(1L)
-                .setHotelName("Hotel-1")
-                .setAddress("Test address")
-                .setRating(5);
+        final HotelDto hotelDto = new HotelDto();
+        hotelDto.setHotelId(1L);
+        hotelDto.setHotelName("Hotel-1");
+        hotelDto.setAddress("Test address");
+        hotelDto.setRating(5);
         when(hotelRepositoryMock.save(any(Hotel.class)))
                 .thenReturn(HotelMapper.mapToModel(hotelDto)
                         .setHotelName(hotelNameUpdated)); //return the entity updated
@@ -80,23 +80,6 @@ class HotelServiceImplTest {
     }
 
     @Test
-    void findHotelsByName() {
-        // scenario setup
-        String hotelName = "hotel-1";
-        PageRequest pageRequest = PageRequest.of(1, 10);
-        List<Hotel> hotelList = LongStream.iterate(1, n -> n + 1)
-                .limit(10)
-                .mapToObj(HotelRepositoryTest.HOTEL_RECORD_1::setHotelId)
-                .collect(Collectors.toList());
-        when(hotelRepositoryMock.findByHotelName(hotelName, pageRequest)).thenReturn(hotelList);
-        // test
-        List<HotelDto> result = sut.findHotelsByName(hotelName, pageRequest);
-        // Verify Result
-        Assertions.assertEquals(10, result.size());
-
-    }
-
-    @Test
     void findHotelById() {
         // scenario setup
         Long hotelId = 1L;
@@ -109,21 +92,63 @@ class HotelServiceImplTest {
     }
 
     @Test
-    void getHotelList() {
+    void getHotelList_empty_hotelName() {
         // scenario setup
-        Long recordsPerPage = 10L;
-        Long totalRecords = 100L;
-        int totalPages = 10;
-        PageRequest pageRequest = PageRequest.of(0, recordsPerPage.intValue());
+        final String hotelName = "";
+        final int pageSize = 10;
+        final Long totalRecords = 100L;
+        final int totalPages = 10;
+        PageRequest pageRequest = PageRequest.of(0, pageSize);
         List<Hotel> hotelList = LongStream.iterate(1, n -> n + 1)
-                .limit(recordsPerPage)
+                .limit(pageSize)
                 .mapToObj(HotelRepositoryTest.HOTEL_RECORD_1::setHotelId)
                 .collect(Collectors.toList());
-        when(hotelRepositoryMock.findAll(pageRequest)).thenReturn(new PageImpl<>(hotelList, Pageable.ofSize(10), totalRecords));
+        when(hotelRepositoryMock.findAll(pageRequest)).thenReturn(new PageImpl<>(hotelList, pageRequest, totalRecords));
         // test
-        HotelListDto hotelList1 = sut.getHotelList(pageRequest);
+        HotelListDto hotelList1 = sut.getHotelList(hotelName, pageRequest);
         // Verify result
-        Assertions.assertEquals(recordsPerPage, hotelList1.getHotelDtoList().size());
+        Assertions.assertEquals(pageSize, hotelList1.getHotelDtoList().size());
+        Assertions.assertEquals(totalRecords, hotelList1.getTotalElements());
+        Assertions.assertEquals(totalPages, hotelList1.getTotalPages());
+    }
+
+    @Test
+    void getHotelList_null_hotelName() {
+        // scenario setup
+        final int pageSize = 10;
+        final Long totalRecords = 100L;
+        final int totalPages = 10;
+        PageRequest pageRequest = PageRequest.of(0, pageSize);
+        List<Hotel> hotelList = LongStream.iterate(1, n -> n + 1)
+                .limit(pageSize)
+                .mapToObj(HotelRepositoryTest.HOTEL_RECORD_1::setHotelId)
+                .collect(Collectors.toList());
+        when(hotelRepositoryMock.findAll(pageRequest)).thenReturn(new PageImpl<>(hotelList, pageRequest, totalRecords));
+        // test
+        HotelListDto hotelList1 = sut.getHotelList(null, pageRequest);
+        // Verify result
+        Assertions.assertEquals(pageSize, hotelList1.getHotelDtoList().size());
+        Assertions.assertEquals(totalRecords, hotelList1.getTotalElements());
+        Assertions.assertEquals(totalPages, hotelList1.getTotalPages());
+    }
+
+    @Test
+    void getHotelList_by_hotelName() {
+        // scenario setup
+        final String hotelName = "Hotel";
+        final int pageSize = 10;
+        final Long totalRecords = 100L;
+        final int totalPages = 10;
+        PageRequest pageRequest = PageRequest.of(0, pageSize);
+        List<Hotel> hotelList = LongStream.iterate(1, n -> n + 1)
+                .limit(pageSize)
+                .mapToObj(HotelRepositoryTest.HOTEL_RECORD_1::setHotelId)
+                .collect(Collectors.toList());
+        when(hotelRepositoryMock.findByHotelNameLikeIgnoreCase(any(String.class), eq(pageRequest))).thenReturn(new PageImpl<>(hotelList, pageRequest, totalRecords));
+        // test
+        HotelListDto hotelList1 = sut.getHotelList(hotelName, pageRequest);
+        // Verify result
+        Assertions.assertEquals(pageSize, hotelList1.getHotelDtoList().size());
         Assertions.assertEquals(totalRecords, hotelList1.getTotalElements());
         Assertions.assertEquals(totalPages, hotelList1.getTotalPages());
     }

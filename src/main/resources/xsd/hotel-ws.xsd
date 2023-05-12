@@ -1,0 +1,118 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://demo.hotel.com/hotel-ws"
+           targetNamespace="http://demo.hotel.com/hotel-ws" elementFormDefault="qualified">
+
+
+    <!--    DTOS-->
+    <xs:complexType name="responseStatus">
+        <xs:sequence>
+            <xs:element name="statusCode" type="xs:string"/>
+            <xs:element name="message" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="hotelDto">
+        <xs:sequence>
+            <xs:element name="hotelId" type="xs:long"/>
+            <xs:element name="hotelName" type="xs:string"/>
+            <xs:element name="address" type="xs:string"/>
+            <xs:element name="rating" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="hotelListDto">
+        <xs:sequence>
+            <xs:element name="hotelDtoList" type="tns:hotelDto" maxOccurs="unbounded"/>
+            <xs:element name="totalElements" type="xs:long"/>
+            <xs:element name="totalPages" type="xs:int"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!--    GET-HOTEL-BY-ID-->
+    <xs:element name="getHotelRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="hotelId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="getHotelResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="responseStatus" type="tns:responseStatus"/>
+                <xs:element name="hotelDto" type="tns:hotelDto"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!--    GET-ALL-HOTELS-->
+    <xs:element name="getHotelListRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="hotelName" type="xs:string"/>
+                <xs:element name="page" type="xs:int" />
+                <xs:element name="size" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="getHotelListResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="responseStatus" type="tns:responseStatus"/>
+                <xs:element name="hotelListDto" type="tns:hotelListDto"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!--    ADD-->
+    <xs:element name="addHotelRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="hotelDto" type="tns:hotelDto"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="addHotelResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="responseStatus" type="tns:responseStatus"/>
+                <xs:element name="hotelDto" type="tns:hotelDto"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!--    UPDATE-->
+    <xs:element name="updateHotelRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="hotelDto" type="tns:hotelDto"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="updateHotelResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="responseStatus" type="tns:responseStatus"/>
+                <xs:element name="hotelDto" type="tns:hotelDto"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!--    DELETE-->
+    <xs:element name="deleteHotelRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="hotelId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="deleteHotelResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="responseStatus" type="tns:responseStatus"/>
+                <xs:element name="result" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema> 
