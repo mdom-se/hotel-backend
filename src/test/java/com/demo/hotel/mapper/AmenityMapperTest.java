@@ -1,7 +1,7 @@
 package com.demo.hotel.mapper;
 
-import com.demo.hotel.dto.AmenityDto;
 import com.demo.hotel.model.Amenity;
+import com.demo.hotel.webservice.dto.AmenityDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

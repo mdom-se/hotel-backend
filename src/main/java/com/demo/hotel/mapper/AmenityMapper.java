@@ -1,7 +1,7 @@
 package com.demo.hotel.mapper;
 
-import com.demo.hotel.dto.AmenityDto;
 import com.demo.hotel.model.Amenity;
+import com.demo.hotel.webservice.dto.AmenityDto;
 
 public class AmenityMapper {
 
@@ -18,10 +18,11 @@ public class AmenityMapper {
         if(amenityModel == null){
             return null;
         }
-        return new AmenityDto()
-                .setAmenityId(amenityModel.getAmenityId())
-                .setAmenityName(amenityModel.getAmenityName())
-                .setHotelId(amenityModel.getAmenityId());
+        AmenityDto amenityDto = new AmenityDto();
+        amenityDto.setAmenityId(amenityModel.getAmenityId());
+        amenityDto.setAmenityName(amenityModel.getAmenityName());
+        amenityDto.setHotelId(amenityModel.getAmenityId());
+        return amenityDto;
     }
 
     /**

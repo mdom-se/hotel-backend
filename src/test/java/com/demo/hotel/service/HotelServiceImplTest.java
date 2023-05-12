@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,9 +22,12 @@ import java.util.stream.LongStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class HotelServiceImplTest {
 
     @InjectMocks
@@ -71,12 +74,25 @@ class HotelServiceImplTest {
     void deleteHotel() {
         // scenario setup
         Long hotelId = 1L;
-        when(hotelRepositoryMock.findById(hotelId))
-                .thenReturn(Optional.of(HotelRepositoryTest.HOTEL_RECORD_1));
+        when(hotelRepositoryMock.existsById(hotelId)).thenReturn(true);
+        doNothing().when(hotelRepositoryMock).deleteById(hotelId);
         // test
         boolean result = sut.deleteHotel(hotelId);
         // Verify result
         Assertions.assertTrue(result);
+        verify(hotelRepositoryMock, times(1)).deleteById(hotelId);
+    }
+
+    @Test
+    void deleteHotel_does_not_exists() {
+        // scenario setup
+        Long hotelId = 1L;
+        when(hotelRepositoryMock.existsById(hotelId)).thenReturn(false);
+        // test
+        boolean result = sut.deleteHotel(hotelId);
+        // Verify result
+        verify(hotelRepositoryMock, times(0)).deleteById(hotelId);
+        Assertions.assertFalse(result);
     }
 
     @Test

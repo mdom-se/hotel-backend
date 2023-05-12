@@ -1,6 +1,7 @@
 package com.demo.hotel.service;
 
-import com.demo.hotel.dto.AmenityDto;
+
+import com.demo.hotel.webservice.dto.AmenityDto;
 
 import java.util.List;
 

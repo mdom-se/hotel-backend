@@ -27,7 +27,15 @@
         </xs:sequence>
     </xs:complexType>
 
-    <!--    GET-HOTEL-BY-ID-->
+    <xs:complexType name="amenityDto">
+        <xs:sequence>
+            <xs:element name="amenityId" type="xs:long"/>
+            <xs:element name="amenityName" type="xs:string"/>
+            <xs:element name="hotelId" type="xs:long"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- GetHotel -->
     <xs:element name="getHotelRequest">
         <xs:complexType>
             <xs:sequence>
@@ -45,7 +53,7 @@
     </xs:element>
 
 
-    <!--    GET-ALL-HOTELS-->
+    <!-- GetHotelList -->
     <xs:element name="getHotelListRequest">
         <xs:complexType>
             <xs:sequence>
@@ -64,7 +72,7 @@
         </xs:complexType>
     </xs:element>
 
-    <!--    ADD-->
+    <!-- AddHotel -->
     <xs:element name="addHotelRequest">
         <xs:complexType>
             <xs:sequence>
@@ -81,7 +89,7 @@
         </xs:complexType>
     </xs:element>
 
-    <!--    UPDATE-->
+    <!-- UpdateHotel -->
     <xs:element name="updateHotelRequest">
         <xs:complexType>
             <xs:sequence>
@@ -98,7 +106,7 @@
         </xs:complexType>
     </xs:element>
 
-    <!--    DELETE-->
+    <!-- DeleteHotel -->
     <xs:element name="deleteHotelRequest">
         <xs:complexType>
             <xs:sequence>
@@ -111,6 +119,57 @@
             <xs:sequence>
                 <xs:element name="responseStatus" type="tns:responseStatus"/>
                 <xs:element name="result" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- AddAmenity -->
+    <xs:element name="addAmenityRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="amenityDto" type="tns:amenityDto"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="addAmenityResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="responseStatus" type="tns:responseStatus"/>
+                <xs:element name="amenityDto" type="tns:amenityDto"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- DeleteAmenity -->
+    <xs:element name="deleteAmenityRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="amenityId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="deleteAmenityResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="responseStatus" type="tns:responseStatus"/>
+                <xs:element name="result" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- GetAmenityList -->
+    <xs:element name="getAmenityListRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="hotelId" type="xs:long"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="getAmenityListResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="responseStatus" type="tns:responseStatus"/>
+                <xs:element name="amenityListDto" type="tns:amenityDto" maxOccurs="unbounded"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

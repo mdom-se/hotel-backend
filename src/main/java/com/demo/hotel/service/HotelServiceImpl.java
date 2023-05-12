@@ -6,8 +6,6 @@ import com.demo.hotel.model.Hotel;
 import com.demo.hotel.repository.HotelRepository;
 import com.demo.hotel.webservice.dto.HotelDto;
 import com.demo.hotel.webservice.dto.HotelListDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,7 +15,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class HotelServiceImpl implements HotelService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HotelServiceImpl.class);
     private final HotelRepository hotelRepository;
 
     public HotelServiceImpl(final HotelRepository hotelRepository) {
@@ -41,14 +38,9 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public boolean deleteHotel(Long hotelId) {
         boolean deleted = false;
-        try {
-            Optional<Hotel> hotelOptional = hotelRepository.findById(hotelId);
-            if (hotelOptional.isPresent()) {
-                hotelRepository.delete(hotelOptional.get());
-                deleted = true;
-            }
-        } catch (Exception ex) {
-            LOGGER.error("Error delete hotel", ex);
+        if (hotelRepository.existsById(hotelId)) {
+            hotelRepository.deleteById(hotelId);
+            deleted = true;
         }
         return deleted;
     }
@@ -62,7 +54,7 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public HotelListDto getHotelList(String hotelName, Pageable pageable) {
         Page<Hotel> result;
-        if(hotelName == null || hotelName.isEmpty()){
+        if (hotelName == null || hotelName.isEmpty()) {
             result = hotelRepository.findAll(pageable);
         } else {
             // String.format will generate a string %hotelName% to use in the like clause
