@@ -11,10 +11,13 @@ public class AmenityMapper {
 
     /**
      *
-     * @param amenityModel
-     * @return
+     * @param amenityModel Amenity Model
+     * @return AmenityDto
      */
     public static AmenityDto mapToDto(final Amenity amenityModel){
+        if(amenityModel == null){
+            return null;
+        }
         return new AmenityDto()
                 .setAmenityId(amenityModel.getAmenityId())
                 .setAmenityName(amenityModel.getAmenityName())
@@ -23,10 +26,13 @@ public class AmenityMapper {
 
     /**
      *
-     * @param amenityDto
-     * @return
+     * @param amenityDto Amenity DTO
+     * @return Amenity Model
      */
     public static Amenity mapToModel(final AmenityDto amenityDto){
+        if(amenityDto == null){
+            return null;
+        }
         return new Amenity()
                 .setAmenityId(amenityDto.getAmenityId())
                 .setAmenityName(amenityDto.getAmenityName())

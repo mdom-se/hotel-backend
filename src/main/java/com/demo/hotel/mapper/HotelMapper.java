@@ -10,6 +10,9 @@ public class HotelMapper {
     }
 
     public static HotelDto mapToDto(Hotel hotelModel){
+        if(hotelModel == null){
+            return null;
+        }
         return new HotelDto()
                 .setHotelId(hotelModel.getHotelId())
                 .setHotelName(hotelModel.getHotelName())
@@ -18,6 +21,9 @@ public class HotelMapper {
     }
 
     public static Hotel mapToModel(HotelDto hotelDto){
+        if(hotelDto == null){
+            return null;
+        }
         return new Hotel()
                 .setHotelId(hotelDto.getHotelId())
                 .setHotelName(hotelDto.getHotelName())
