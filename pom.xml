@@ -35,6 +35,10 @@
 			<artifactId>spring-boot-starter-web-services</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-sleuth-zipkin</artifactId>
 		</dependency>
@@ -87,6 +91,7 @@
 				<configuration>
 					<excludes>
 						<exclude>com/demo/hotel/HotelBackendApplication.class</exclude>
+						<exclude>com/demo/hotel/webservice/dto/ObjectFactory.class</exclude>
 					</excludes>
 				</configuration>
 				<executions>
@@ -104,6 +109,29 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>2.5.0</version>
+				<executions>
+					<execution>
+						<id>xjc-schema</id>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<sources>
+						<source>src/main/resources/xsd</source>
+					</sources>
+					<packageName>com.demo.hotel.webservice.dto</packageName>
+					<clearOutputDir>false</clearOutputDir>
+				</configuration>
+			</plugin>
+
+
 		</plugins>
 	</build>
 
