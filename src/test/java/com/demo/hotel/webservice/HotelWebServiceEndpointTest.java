@@ -1,5 +1,6 @@
 package com.demo.hotel.webservice;
 
+import com.demo.hotel.exception.InvalidHotelFieldException;
 import com.demo.hotel.mapper.HotelMapper;
 import com.demo.hotel.model.Hotel;
 import com.demo.hotel.service.AmenityService;
@@ -41,13 +42,14 @@ import java.util.stream.LongStream;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @ExtendWith(MockitoExtension.class)
-class HotelsWSEndpointTest {
+class HotelWebServiceEndpointTest {
 
     @InjectMocks
-    private HotelsWSEndpoint wsEndpoint;
+    private HotelWebServiceEndpoint wsEndpoint;
 
     @Mock
     private HotelService hotelService;
@@ -66,8 +68,8 @@ class HotelsWSEndpointTest {
         return hotelDto;
     }
 
-    private List<HotelDto> createHotelList(){
-        return LongStream.iterate(1, i -> i+1)
+    private List<HotelDto> createHotelList() {
+        return LongStream.iterate(1, i -> i + 1)
                 .limit(5)
                 .mapToObj(id -> {
                     HotelDto dto = newHotelDto();
@@ -90,12 +92,30 @@ class HotelsWSEndpointTest {
         // verify result
         Assertions.assertNotNull(response);
         Assertions.assertEquals(hotelId, response.getHotelDto().getHotelId());
-        Assertions.assertEquals(OK.value(), response.getResponseStatus().getStatusCode());
-        Assertions.assertEquals(OK.name(), response.getResponseStatus().getMessage());
+        Assertions.assertEquals(OK.value(), response.getStatusCode());
+        Assertions.assertEquals(OK.name(), response.getMessage());
     }
 
     @Test
-    void addHotel() {
+    void getHotel_notFound() {
+        // scenario setup
+        long hotelId = 1L;
+        GetHotelRequest request = new GetHotelRequest();
+        request.setHotelId(hotelId);
+        when(hotelService.findHotelById(hotelId))
+                .thenReturn(null);
+        // test
+        GetHotelResponse response = wsEndpoint.getHotel(request);
+        // verify result
+        Assertions.assertNotNull(response);
+        Assertions.assertNull(response.getHotelDto());
+        Assertions.assertEquals(NOT_FOUND.value(), response.getStatusCode());
+        Assertions.assertEquals(NOT_FOUND.name(), response.getMessage());
+    }
+
+
+    @Test
+    void addHotel() throws InvalidHotelFieldException {
         // scenario setup
         Long hotelId = 10L;
         HotelDto hotelDto = newHotelDto();
@@ -112,12 +132,13 @@ class HotelsWSEndpointTest {
         // verify result
         Assertions.assertNotNull(response);
         Assertions.assertEquals(hotelId, response.getHotelDto().getHotelId());
-        Assertions.assertEquals(OK.value(), response.getResponseStatus().getStatusCode());
-        Assertions.assertEquals(OK.name(), response.getResponseStatus().getMessage());
+        Assertions.assertEquals(OK.value(), response.getStatusCode());
+        Assertions.assertEquals(OK.name(), response.getMessage());
     }
 
+
     @Test
-    void updateHotel() {
+    void updateHotel() throws InvalidHotelFieldException {
         // scenario setup
         Long hotelId = 10L;
         HotelDto hotelDto = newHotelDto();
@@ -131,8 +152,8 @@ class HotelsWSEndpointTest {
         // verify result
         Assertions.assertNotNull(response);
         Assertions.assertEquals(hotelId, response.getHotelDto().getHotelId());
-        Assertions.assertEquals(OK.value(), response.getResponseStatus().getStatusCode());
-        Assertions.assertEquals(OK.name(), response.getResponseStatus().getMessage());
+        Assertions.assertEquals(OK.value(), response.getStatusCode());
+        Assertions.assertEquals(OK.name(), response.getMessage());
     }
 
     @Test
@@ -145,8 +166,8 @@ class HotelsWSEndpointTest {
         DeleteHotelResponse response = wsEndpoint.deleteHotel(request);
         // Verify result
         Assertions.assertTrue(response.isResult());
-        Assertions.assertEquals(OK.value(), response.getResponseStatus().getStatusCode());
-        Assertions.assertEquals(OK.name(), response.getResponseStatus().getMessage());
+        Assertions.assertEquals(OK.value(), response.getStatusCode());
+        Assertions.assertEquals(OK.name(), response.getMessage());
     }
 
     @Test
@@ -173,8 +194,8 @@ class HotelsWSEndpointTest {
         Assertions.assertNotNull(response.getHotelListDto());
         Assertions.assertEquals(5, response.getHotelListDto().getTotalElements());
         Assertions.assertEquals(1, response.getHotelListDto().getTotalPages());
-        Assertions.assertEquals(OK.value(), response.getResponseStatus().getStatusCode());
-        Assertions.assertEquals(OK.name(), response.getResponseStatus().getMessage());
+        Assertions.assertEquals(OK.value(), response.getStatusCode());
+        Assertions.assertEquals(OK.name(), response.getMessage());
     }
 
     @Test
@@ -187,7 +208,7 @@ class HotelsWSEndpointTest {
         hotelAmenityDto.setHotelId(4L);
         request.setHotelAmenityDto(hotelAmenityDto);
         when(hotelAmenityService.addAmenityToHotel(hotelAmenityDto))
-                .thenAnswer( invocationOnMock -> {
+                .thenAnswer(invocationOnMock -> {
                     HotelAmenityDto result = invocationOnMock.getArgument(0, HotelAmenityDto.class);
                     result.setHotelAmenityId(hotelAmenityId);
                     return result;
@@ -197,8 +218,8 @@ class HotelsWSEndpointTest {
         // verify result
         Assertions.assertNotNull(response);
         Assertions.assertEquals(hotelAmenityId, response.getHotelAmenityDto().getHotelAmenityId());
-        Assertions.assertEquals(OK.value(), response.getResponseStatus().getStatusCode());
-        Assertions.assertEquals(OK.name(), response.getResponseStatus().getMessage());
+        Assertions.assertEquals(OK.value(), response.getStatusCode());
+        Assertions.assertEquals(OK.name(), response.getMessage());
     }
 
     @Test
@@ -216,8 +237,8 @@ class HotelsWSEndpointTest {
         // verify result
         Assertions.assertNotNull(response);
         Assertions.assertTrue(response.isResult());
-        Assertions.assertEquals(OK.value(), response.getResponseStatus().getStatusCode());
-        Assertions.assertEquals(OK.name(), response.getResponseStatus().getMessage());
+        Assertions.assertEquals(OK.value(), response.getStatusCode());
+        Assertions.assertEquals(OK.name(), response.getMessage());
     }
 
     @Test
@@ -232,7 +253,7 @@ class HotelsWSEndpointTest {
         // verify result
         Assertions.assertNotNull(response);
         Assertions.assertEquals(1, response.getAmenityListDto().size());
-        Assertions.assertEquals(OK.value(), response.getResponseStatus().getStatusCode());
-        Assertions.assertEquals(OK.name(), response.getResponseStatus().getMessage());
+        Assertions.assertEquals(OK.value(), response.getStatusCode());
+        Assertions.assertEquals(OK.name(), response.getMessage());
     }
 }

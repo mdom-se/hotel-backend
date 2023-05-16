@@ -4,6 +4,7 @@ package com.demo.hotel.service;
 import com.demo.hotel.mapper.HotelMapper;
 import com.demo.hotel.model.Hotel;
 import com.demo.hotel.repository.HotelRepository;
+import com.demo.hotel.validator.HotelValidator;
 import com.demo.hotel.webservice.dto.HotelDto;
 import com.demo.hotel.webservice.dto.HotelListDto;
 import org.slf4j.Logger;
@@ -24,21 +25,26 @@ public class HotelServiceImpl implements HotelService {
 
     private final HotelAmenityService hotelAmenityService;
 
+    private final HotelValidator hotelValidator;
+
     public HotelServiceImpl(final HotelRepository hotelRepository,
                             final HotelAmenityService hotelAmenityService) {
         this.hotelRepository = hotelRepository;
         this.hotelAmenityService = hotelAmenityService;
+        this.hotelValidator = new HotelValidator();
     }
 
     @Override
-    public HotelDto createHotel(HotelDto hotelDto) {
+    public HotelDto createHotel(HotelDto hotelDto){
+        hotelValidator.validate(hotelDto);
         final Hotel hotel = HotelMapper.mapToModel(hotelDto);
         final Hotel hotelCreated = hotelRepository.save(hotel);
         return HotelMapper.mapToDto(hotelCreated);
     }
 
     @Override
-    public HotelDto updateHotel(HotelDto hotelDto) {
+    public HotelDto updateHotel(HotelDto hotelDto){
+        hotelValidator.validate(hotelDto);
         final Hotel hotel = HotelMapper.mapToModel(hotelDto);
         final Hotel hotelUpdated = hotelRepository.save(hotel);
         return HotelMapper.mapToDto(hotelUpdated);

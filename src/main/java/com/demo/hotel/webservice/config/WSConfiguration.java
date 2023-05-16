@@ -1,4 +1,4 @@
-package com.demo.hotel.webservice;
+package com.demo.hotel.webservice.config;
 
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
@@ -16,7 +16,7 @@ import org.springframework.xml.xsd.XsdSchema;
 @EnableWs
 public class WSConfiguration extends WsConfigurerAdapter {
 
-    static final String WS_TARGET_NAMESPACE = "http://demo.hotel.com/hotel-ws";
+    public static final String WS_TARGET_NAMESPACE = "http://demo.hotel.com/hotel-ws";
     @Bean
     public ServletRegistrationBean messageDispatcherServlet(ApplicationContext applicationContext) {
         MessageDispatcherServlet servlet = new MessageDispatcherServlet();

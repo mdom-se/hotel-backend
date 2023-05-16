@@ -21,7 +21,6 @@ import com.demo.hotel.webservice.dto.GetHotelResponse;
 import com.demo.hotel.webservice.dto.HotelAmenityDto;
 import com.demo.hotel.webservice.dto.HotelDto;
 import com.demo.hotel.webservice.dto.HotelListDto;
-import com.demo.hotel.webservice.dto.ResponseStatus;
 import com.demo.hotel.webservice.dto.UpdateHotelRequest;
 import com.demo.hotel.webservice.dto.UpdateHotelResponse;
 import org.springframework.data.domain.PageRequest;
@@ -33,12 +32,12 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import java.util.List;
 
-import static com.demo.hotel.webservice.WSConfiguration.WS_TARGET_NAMESPACE;
+import static com.demo.hotel.webservice.config.WSConfiguration.WS_TARGET_NAMESPACE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 @Endpoint
-public class HotelsWSEndpoint {
-
+public class HotelWebServiceEndpoint {
 
     private final HotelService hotelService;
 
@@ -47,9 +46,9 @@ public class HotelsWSEndpoint {
     private final HotelAmenityService hotelAmenityService;
 
 
-    public HotelsWSEndpoint(final HotelService hotelService,
-                            final AmenityService amenityService,
-                            final HotelAmenityService hotelAmenityService) {
+    public HotelWebServiceEndpoint(final HotelService hotelService,
+                                   final AmenityService amenityService,
+                                   final HotelAmenityService hotelAmenityService) {
         this.hotelService = hotelService;
         this.amenityService = amenityService;
         this.hotelAmenityService = hotelAmenityService;
@@ -61,7 +60,9 @@ public class HotelsWSEndpoint {
         GetHotelResponse response = new GetHotelResponse();
         HotelDto hotelDto = hotelService.findHotelById(getHotelRequest.getHotelId());
         response.setHotelDto(hotelDto);
-        response.setResponseStatus(responseStatus(OK));
+        HttpStatus status = hotelDto != null ? OK : NOT_FOUND;
+        response.setStatusCode(status.value());
+        response.setMessage(status.name());
         return response;
     }
 
@@ -72,7 +73,8 @@ public class HotelsWSEndpoint {
         AddHotelResponse response = new AddHotelResponse();
         HotelDto hotelDto = hotelService.createHotel(addHotelRequest.getHotelDto());
         response.setHotelDto(hotelDto);
-        response.setResponseStatus(responseStatus(OK));
+        response.setStatusCode(OK.value());
+        response.setMessage(OK.name());
         return response;
     }
 
@@ -82,7 +84,8 @@ public class HotelsWSEndpoint {
         UpdateHotelResponse response = new UpdateHotelResponse();
         HotelDto hotelDto = hotelService.updateHotel(updateHotelRequest.getHotelDto());
         response.setHotelDto(hotelDto);
-        response.setResponseStatus(responseStatus(OK));
+        response.setStatusCode(OK.value());
+        response.setMessage(OK.name());
         return response;
     }
 
@@ -92,7 +95,8 @@ public class HotelsWSEndpoint {
         DeleteHotelResponse response = new DeleteHotelResponse();
         boolean result = hotelService.deleteHotel(deleteHotelRequest.getHotelId());
         response.setResult(result);
-        response.setResponseStatus(responseStatus(OK));
+        response.setStatusCode(OK.value());
+        response.setMessage(OK.name());
         return response;
     }
 
@@ -104,7 +108,8 @@ public class HotelsWSEndpoint {
         PageRequest pageRequest = PageRequest.of(getHotelListRequest.getPage(), getHotelListRequest.getPageSize());
         HotelListDto hotelListDto = hotelService.getHotelList(getHotelListRequest.getHotelName(), pageRequest);
         response.setHotelListDto(hotelListDto);
-        response.setResponseStatus(responseStatus(OK));
+        response.setStatusCode(OK.value());
+        response.setMessage(OK.name());
         return response;
     }
 
@@ -115,7 +120,8 @@ public class HotelsWSEndpoint {
         AddHotelAmenityResponse response = new AddHotelAmenityResponse();
         HotelAmenityDto hotelAmenityDto = hotelAmenityService.addAmenityToHotel(request.getHotelAmenityDto());
         response.setHotelAmenityDto(hotelAmenityDto);
-        response.setResponseStatus(responseStatus(OK));
+        response.setStatusCode(OK.value());
+        response.setMessage(OK.name());
         return response;
     }
 
@@ -125,7 +131,8 @@ public class HotelsWSEndpoint {
         DeleteHotelAmenityResponse response = new DeleteHotelAmenityResponse();
         boolean result = hotelAmenityService.deleteAmenityFromHotel(request.getHotelAmenityDto());
         response.setResult(result);
-        response.setResponseStatus(responseStatus(OK));
+        response.setStatusCode(OK.value());
+        response.setMessage(OK.name());
         return response;
     }
 
@@ -135,16 +142,10 @@ public class HotelsWSEndpoint {
         GetAmenityListResponse response = new GetAmenityListResponse();
         List<AmenityDto> amenityDtoList = amenityService.findAmenitiesByHotelId(getAmenityListRequest.getHotelId());
         response.getAmenityListDto().addAll(amenityDtoList);
-        response.setResponseStatus(responseStatus(OK));
+        response.setStatusCode(OK.value());
+        response.setMessage(OK.name());
         return response;
     }
 
-
-    private ResponseStatus responseStatus(HttpStatus httpStatus) {
-        ResponseStatus responseStatus = new ResponseStatus();
-        responseStatus.setStatusCode(httpStatus.value());
-        responseStatus.setMessage(httpStatus.name());
-        return responseStatus;
-    }
 
 }

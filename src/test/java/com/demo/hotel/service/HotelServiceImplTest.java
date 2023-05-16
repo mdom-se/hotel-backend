@@ -1,5 +1,6 @@
 package com.demo.hotel.service;
 
+import com.demo.hotel.exception.InvalidHotelFieldException;
 import com.demo.hotel.mapper.HotelMapper;
 import com.demo.hotel.model.Hotel;
 import com.demo.hotel.repository.HotelRepository;
@@ -37,8 +38,10 @@ class HotelServiceImplTest {
     @Mock
     private HotelAmenityService hotelAmenityService;
 
+
+
     @Test
-    void createHotel() {
+    void createHotel() throws InvalidHotelFieldException {
         // scenario setup
         Long hotelId = 1L;
         Hotel hotel = HotelRepositoryTest.HOTEL_RECORD_1;
@@ -54,7 +57,7 @@ class HotelServiceImplTest {
     }
 
     @Test
-    void updateHotel() {
+    void updateHotel() throws InvalidHotelFieldException {
         //scenario setup
         final String hotelNameUpdated = "Hotel-1-updated";
         final HotelDto hotelDto = new HotelDto();
