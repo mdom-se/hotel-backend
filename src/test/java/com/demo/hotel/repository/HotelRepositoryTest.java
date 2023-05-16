@@ -8,10 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
 
 @DataJpaTest
@@ -58,20 +55,11 @@ public class HotelRepositoryTest {
     @Test
     public void test_get_hotel_list_by_hotel_name() {
         // scenario setup
-        final String hotelName = "%HotelRivera%";
-        final long expectedRecords = 50L;
-        final int pageSize = 10;
-        final long totalRecords = 100L;
+        final String hotelName = "%Hotel%";
+        final long expectedRecords = 10L;
+        final int pageSize = 5;
         final PageRequest pageRequest = PageRequest.of(0, pageSize);
-        final List<Hotel> hotelList = LongStream.iterate(1, n -> n + 1)
-                .limit(totalRecords) // 100 records
-                .mapToObj(n -> new Hotel()
-                        .setHotelName(String.format("Hotel%s-%d", n > 50 ? "Rivera" : "Concordia", n)) //To create different hotels names
-                        .setRating(5)
-                        .setAddress("Test address")
-                ).collect(Collectors.toList());
-        hotelRepositoryTested.saveAll(hotelList);
-        // Test
+        // we will retrieve the preloaded records from the script /src/test/resources/data.sql
         Page<Hotel> result = hotelRepositoryTested.findByHotelNameLikeIgnoreCase(hotelName, pageRequest);
         // Verify result
         Assertions.assertEquals(expectedRecords, result.getTotalElements());
@@ -82,19 +70,11 @@ public class HotelRepositoryTest {
     @Test
     public void test_get_hotel_list() {
         // scenario setup
-        final long expectedRecords = 100L;
-        final int pageSize = 10;
-        final long totalRecords = 100L;
+        final long expectedRecords = 10L;
+        final int pageSize = 5;
         final PageRequest pageRequest = PageRequest.of(0, pageSize);
-        final List<Hotel> hotelList = LongStream.iterate(1, n -> n + 1)
-                .limit(totalRecords) // 100 records
-                .mapToObj(n -> new Hotel()
-                        .setHotelName(String.format("Hotel%s-%d", n > 50 ? "Rivera" : "Concordia", n)) //To create different hotels names
-                        .setRating(5)
-                        .setAddress("Test address")
-                ).collect(Collectors.toList());
-        hotelRepositoryTested.saveAll(hotelList);
         // Test
+        // we will retrieve the preloaded records from the script /src/test/resources/data.sql
         Page<Hotel> result = hotelRepositoryTested.findAll(pageRequest);
         // Verify result
         Assertions.assertEquals(expectedRecords, result.getTotalElements());

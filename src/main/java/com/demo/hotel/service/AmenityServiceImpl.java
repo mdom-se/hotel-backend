@@ -2,12 +2,13 @@ package com.demo.hotel.service;
 
 
 import com.demo.hotel.mapper.AmenityMapper;
-import com.demo.hotel.model.Amenity;
+import com.demo.hotel.model.HotelAmenity;
 import com.demo.hotel.repository.AmenityRepository;
-import com.demo.hotel.repository.HotelRepository;
+import com.demo.hotel.repository.HotelAmenityRepository;
 import com.demo.hotel.webservice.dto.AmenityDto;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,40 +17,27 @@ public class AmenityServiceImpl implements AmenityService {
 
     private final AmenityRepository amenityRepository;
 
-    private final HotelRepository hotelRepository;
+    private final HotelAmenityRepository hotelAmenityRepository;
 
-    public AmenityServiceImpl(AmenityRepository amenityRepository, HotelRepository hotelRepository) {
+    public AmenityServiceImpl(final AmenityRepository amenityRepository,
+                              final HotelAmenityRepository hotelAmenityRepository) {
         this.amenityRepository = amenityRepository;
-        this.hotelRepository = hotelRepository;
+        this.hotelAmenityRepository = hotelAmenityRepository;
     }
 
-
-    @Override
-    public AmenityDto createAmenity(AmenityDto amenityDto) {
-        AmenityDto result = null;
-        if (amenityDto.getHotelId() > 0) {
-            boolean hotelExists = hotelRepository.existsById(amenityDto.getHotelId());
-            if (hotelExists) {
-                Amenity amenity = amenityRepository.save(AmenityMapper.mapToModel(amenityDto));
-                result = AmenityMapper.mapToDto(amenity);
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public boolean deleteAmenity(Long amenityId) {
-        boolean deleted = false;
-        if (amenityRepository.existsById(amenityId)) {
-            amenityRepository.deleteById(amenityId);
-            deleted = true;
-        }
-        return deleted;
-    }
 
     @Override
     public List<AmenityDto> findAmenitiesByHotelId(Long hotelId) {
-        List<Amenity> result = amenityRepository.findAmenitiesByHotelId(hotelId);
-        return result.stream().map(AmenityMapper::mapToDto).collect(Collectors.toList());
+        final List<AmenityDto> amenityDtoList;
+        List<HotelAmenity> result = hotelAmenityRepository.findHotelsAmenitiesByHotelId(hotelId);
+        List<Long> ids = result.stream().map(HotelAmenity::getAmenityId).collect(Collectors.toList());
+        if (!ids.isEmpty()) {
+            amenityDtoList = amenityRepository.findAllById(ids).stream().map(AmenityMapper::mapToDto).collect(Collectors.toList());
+        } else {
+            amenityDtoList = Collections.emptyList();
+        }
+        return amenityDtoList;
     }
+
+
 }

@@ -34,6 +34,8 @@ class HotelServiceImplTest {
     private HotelServiceImpl sut;
     @Mock
     private HotelRepository hotelRepositoryMock;
+    @Mock
+    private HotelAmenityService hotelAmenityService;
 
     @Test
     void createHotel() {
@@ -75,11 +77,13 @@ class HotelServiceImplTest {
         // scenario setup
         Long hotelId = 1L;
         when(hotelRepositoryMock.existsById(hotelId)).thenReturn(true);
+        when(hotelAmenityService.deleteHotelAmenitiesByHotelId(hotelId)).thenReturn(1L);
         doNothing().when(hotelRepositoryMock).deleteById(hotelId);
         // test
         boolean result = sut.deleteHotel(hotelId);
         // Verify result
         Assertions.assertTrue(result);
+        verify(hotelAmenityService, times(1)).deleteHotelAmenitiesByHotelId(hotelId);
         verify(hotelRepositoryMock, times(1)).deleteById(hotelId);
     }
 

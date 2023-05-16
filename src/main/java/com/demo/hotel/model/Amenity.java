@@ -14,8 +14,6 @@ public class Amenity {
     private Long amenityId;
     @Column(length = 50, nullable = false)
     private String amenityName;
-    @Column(nullable = false)
-    private Long hotelId;
 
     public Long getAmenityId() {
         return amenityId;
@@ -35,12 +33,4 @@ public class Amenity {
         return this;
     }
 
-    public Long getHotelId() {
-        return hotelId;
-    }
-
-    public Amenity setHotelId(Long hotelId) {
-        this.hotelId = hotelId;
-        return this;
-    }
 }
