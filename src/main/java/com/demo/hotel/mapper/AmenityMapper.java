@@ -21,7 +21,6 @@ public class AmenityMapper {
         AmenityDto amenityDto = new AmenityDto();
         amenityDto.setAmenityId(amenityModel.getAmenityId());
         amenityDto.setAmenityName(amenityModel.getAmenityName());
-        amenityDto.setHotelId(amenityModel.getAmenityId());
         return amenityDto;
     }
 
@@ -36,7 +35,6 @@ public class AmenityMapper {
         }
         return new Amenity()
                 .setAmenityId(amenityDto.getAmenityId())
-                .setAmenityName(amenityDto.getAmenityName())
-                .setHotelId(amenityDto.getAmenityId());
+                .setAmenityName(amenityDto.getAmenityName());
     }
 }

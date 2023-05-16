@@ -1,5 +1,6 @@
 package com.demo.hotel.service;
 
+import com.demo.hotel.exception.InvalidHotelFieldException;
 import com.demo.hotel.mapper.HotelMapper;
 import com.demo.hotel.model.Hotel;
 import com.demo.hotel.repository.HotelRepository;
@@ -34,9 +35,13 @@ class HotelServiceImplTest {
     private HotelServiceImpl sut;
     @Mock
     private HotelRepository hotelRepositoryMock;
+    @Mock
+    private HotelAmenityService hotelAmenityService;
+
+
 
     @Test
-    void createHotel() {
+    void createHotel() throws InvalidHotelFieldException {
         // scenario setup
         Long hotelId = 1L;
         Hotel hotel = HotelRepositoryTest.HOTEL_RECORD_1;
@@ -52,7 +57,7 @@ class HotelServiceImplTest {
     }
 
     @Test
-    void updateHotel() {
+    void updateHotel() throws InvalidHotelFieldException {
         //scenario setup
         final String hotelNameUpdated = "Hotel-1-updated";
         final HotelDto hotelDto = new HotelDto();
@@ -75,11 +80,13 @@ class HotelServiceImplTest {
         // scenario setup
         Long hotelId = 1L;
         when(hotelRepositoryMock.existsById(hotelId)).thenReturn(true);
+        when(hotelAmenityService.deleteHotelAmenitiesByHotelId(hotelId)).thenReturn(1L);
         doNothing().when(hotelRepositoryMock).deleteById(hotelId);
         // test
         boolean result = sut.deleteHotel(hotelId);
         // Verify result
         Assertions.assertTrue(result);
+        verify(hotelAmenityService, times(1)).deleteHotelAmenitiesByHotelId(hotelId);
         verify(hotelRepositoryMock, times(1)).deleteById(hotelId);
     }
 

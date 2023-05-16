@@ -10,25 +10,21 @@ class AmenityMapperTest {
     @Test
     public void mapToDto(){
         Amenity amenityModel = new Amenity();
-        amenityModel.setHotelId(1L);
         amenityModel.setAmenityName("Swimming Pool");
         amenityModel.setAmenityId(1L);
         AmenityDto amenityDto = AmenityMapper.mapToDto(amenityModel);
         Assertions.assertEquals(amenityModel.getAmenityId(), amenityDto.getAmenityId());
         Assertions.assertEquals(amenityModel.getAmenityName(), amenityDto.getAmenityName());
-        Assertions.assertEquals(amenityModel.getHotelId(), amenityDto.getHotelId());
     }
 
     @Test
     public void mapToModel(){
         AmenityDto amenityDto = new AmenityDto();
-        amenityDto.setHotelId(1L);
         amenityDto.setAmenityName("Swimming Pool");
         amenityDto.setAmenityId(1L);
         Amenity amenityModel = AmenityMapper.mapToModel(amenityDto);
         Assertions.assertEquals(amenityDto.getAmenityId(), amenityModel.getAmenityId());
         Assertions.assertEquals(amenityDto.getAmenityName(), amenityModel.getAmenityName());
-        Assertions.assertEquals(amenityDto.getHotelId(), amenityModel.getHotelId());
     }
 
     @Test
