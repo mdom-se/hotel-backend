@@ -14,6 +14,8 @@ import com.demo.hotel.webservice.dto.DeleteHotelRequest;
 import com.demo.hotel.webservice.dto.DeleteHotelResponse;
 import com.demo.hotel.webservice.dto.GetAmenityListRequest;
 import com.demo.hotel.webservice.dto.GetAmenityListResponse;
+import com.demo.hotel.webservice.dto.GetHotelAmenityListRequest;
+import com.demo.hotel.webservice.dto.GetHotelAmenityListResponse;
 import com.demo.hotel.webservice.dto.GetHotelListRequest;
 import com.demo.hotel.webservice.dto.GetHotelListResponse;
 import com.demo.hotel.webservice.dto.GetHotelRequest;
@@ -107,7 +109,7 @@ public class HotelWebServiceEndpoint {
         GetHotelListResponse response = new GetHotelListResponse();
         PageRequest pageRequest = PageRequest.of(getHotelListRequest.getPage(), getHotelListRequest.getPageSize());
         HotelListDto hotelListDto = hotelService.getHotelList(getHotelListRequest.getHotelName(), pageRequest);
-        response.setHotelListDto(hotelListDto);
+        response.setResult(hotelListDto);
         response.setStatusCode(OK.value());
         response.setMessage(OK.name());
         return response;
@@ -136,11 +138,22 @@ public class HotelWebServiceEndpoint {
         return response;
     }
 
+    @PayloadRoot(namespace = WS_TARGET_NAMESPACE, localPart = "getHotelAmenityListRequest")
+    @ResponsePayload
+    public GetHotelAmenityListResponse getHotelAmenityListRequest(@RequestPayload GetHotelAmenityListRequest request) {
+        GetHotelAmenityListResponse response = new GetHotelAmenityListResponse();
+        List<AmenityDto> amenityDtoList = amenityService.findAmenitiesByHotelId(request.getHotelId());
+        response.getAmenityListDto().addAll(amenityDtoList);
+        response.setStatusCode(OK.value());
+        response.setMessage(OK.name());
+        return response;
+    }
+
     @PayloadRoot(namespace = WS_TARGET_NAMESPACE, localPart = "getAmenityListRequest")
     @ResponsePayload
-    public GetAmenityListResponse getAmenityList(@RequestPayload GetAmenityListRequest getAmenityListRequest) {
+    public GetAmenityListResponse getAmenityListRequest(@RequestPayload GetAmenityListRequest request) {
         GetAmenityListResponse response = new GetAmenityListResponse();
-        List<AmenityDto> amenityDtoList = amenityService.findAmenitiesByHotelId(getAmenityListRequest.getHotelId());
+        List<AmenityDto> amenityDtoList = amenityService.getAmenityList();
         response.getAmenityListDto().addAll(amenityDtoList);
         response.setStatusCode(OK.value());
         response.setMessage(OK.name());

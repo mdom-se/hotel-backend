@@ -7,6 +7,7 @@ import com.demo.hotel.service.HotelService;
 import com.demo.hotel.webservice.dto.AddHotelRequest;
 import com.demo.hotel.webservice.dto.AddHotelResponse;
 import com.demo.hotel.webservice.dto.HotelDto;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,4 +124,10 @@ class HotelWebServiceEndpointHandlerTest {
         return new StringSource(sw.toString());
     }
 
+    @Test
+    void handleError() {
+        HotelWebServiceEndpointHandler test = new HotelWebServiceEndpointHandler();
+        Object result = test.handleError(null, new Exception());
+        Assertions.assertNull(result);
+    }
 }

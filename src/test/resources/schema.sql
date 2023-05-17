@@ -20,6 +20,8 @@ CREATE TABLE amenities (
                            updated_date TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE UNIQUE INDEX uq_amenities_amenity_name on amenities ( amenity_name );
+
 CREATE TABLE hotels_amenities(
                                  hotel_amenity_id serial PRIMARY KEY,
                                  hotel_id INTEGER NOT NULL,

@@ -34,7 +34,7 @@ public class HotelWebServiceEndpointHandler {
     }
 
 
-    private Object handleError(Class<?> returnType, Throwable e) {
+    Object handleError(Class<?> returnType, Throwable e) {
         Object response = null;
         try {
             Object newReturn = returnType.newInstance();
