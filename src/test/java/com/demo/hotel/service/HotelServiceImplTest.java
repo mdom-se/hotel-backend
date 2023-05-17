@@ -167,7 +167,7 @@ class HotelServiceImplTest {
                 .limit(pageSize)
                 .mapToObj(HotelRepositoryTest.HOTEL_RECORD_1::setHotelId)
                 .collect(Collectors.toList());
-        when(hotelRepositoryMock.findByHotelNameLikeIgnoreCase(any(String.class), eq(pageRequest))).thenReturn(new PageImpl<>(hotelList, pageRequest, totalRecords));
+        when(hotelRepositoryMock.findByHotelNameLikeIgnoreCaseOrderByHotelNameAsc(any(String.class), eq(pageRequest))).thenReturn(new PageImpl<>(hotelList, pageRequest, totalRecords));
         // test
         HotelListDto hotelList1 = sut.getHotelList(hotelName, pageRequest);
         // Verify result

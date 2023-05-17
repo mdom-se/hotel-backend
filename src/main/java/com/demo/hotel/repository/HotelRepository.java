@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface HotelRepository extends JpaRepository<Hotel, Long> {
-    Page<Hotel> findByHotelNameLikeIgnoreCase(String hotelName, Pageable pageable);
+    Page<Hotel> findByHotelNameLikeIgnoreCaseOrderByHotelNameAsc(String hotelName, Pageable pageable);
 
     Optional<Hotel> findByHotelName(String hotelName);
 }

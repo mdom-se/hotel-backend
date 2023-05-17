@@ -60,7 +60,7 @@ public class HotelRepositoryTest {
         final int pageSize = 5;
         final PageRequest pageRequest = PageRequest.of(0, pageSize);
         // we will retrieve the preloaded records from the script /src/test/resources/data.sql
-        Page<Hotel> result = hotelRepositoryTested.findByHotelNameLikeIgnoreCase(hotelName, pageRequest);
+        Page<Hotel> result = hotelRepositoryTested.findByHotelNameLikeIgnoreCaseOrderByHotelNameAsc(hotelName, pageRequest);
         // Verify result
         Assertions.assertEquals(expectedRecords, result.getTotalElements());
         Assertions.assertEquals(pageSize, result.getContent().size());

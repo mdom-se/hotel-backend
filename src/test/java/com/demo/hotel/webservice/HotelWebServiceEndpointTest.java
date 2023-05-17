@@ -17,6 +17,8 @@ import com.demo.hotel.webservice.dto.DeleteHotelRequest;
 import com.demo.hotel.webservice.dto.DeleteHotelResponse;
 import com.demo.hotel.webservice.dto.GetAmenityListRequest;
 import com.demo.hotel.webservice.dto.GetAmenityListResponse;
+import com.demo.hotel.webservice.dto.GetHotelAmenityListRequest;
+import com.demo.hotel.webservice.dto.GetHotelAmenityListResponse;
 import com.demo.hotel.webservice.dto.GetHotelListRequest;
 import com.demo.hotel.webservice.dto.GetHotelListResponse;
 import com.demo.hotel.webservice.dto.GetHotelRequest;
@@ -191,9 +193,9 @@ class HotelWebServiceEndpointTest {
         GetHotelListResponse response = wsEndpoint.getHotelList(request);
         // verify result
         Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.getHotelListDto());
-        Assertions.assertEquals(5, response.getHotelListDto().getTotalElements());
-        Assertions.assertEquals(1, response.getHotelListDto().getTotalPages());
+        Assertions.assertNotNull(response.getResult());
+        Assertions.assertEquals(5, response.getResult().getTotalElements());
+        Assertions.assertEquals(1, response.getResult().getTotalPages());
         Assertions.assertEquals(OK.value(), response.getStatusCode());
         Assertions.assertEquals(OK.name(), response.getMessage());
     }
@@ -242,14 +244,30 @@ class HotelWebServiceEndpointTest {
     }
 
     @Test
-    void getAmenityList() {
+    void getHotelAmenityList() {
         // scenario setup
-        GetAmenityListRequest request = new GetAmenityListRequest();
+        GetHotelAmenityListRequest request = new GetHotelAmenityListRequest();
         request.setHotelId(1L);
         when(amenityService.findAmenitiesByHotelId(request.getHotelId()))
                 .thenReturn(Collections.singletonList(new AmenityDto()));
         // test
-        GetAmenityListResponse response = wsEndpoint.getAmenityList(request);
+        GetHotelAmenityListResponse response = wsEndpoint.getHotelAmenityListRequest(request);
+        // verify result
+        Assertions.assertNotNull(response);
+        Assertions.assertEquals(1, response.getAmenityListDto().size());
+        Assertions.assertEquals(OK.value(), response.getStatusCode());
+        Assertions.assertEquals(OK.name(), response.getMessage());
+    }
+
+
+    @Test
+    void getAmenityList() {
+        // scenario setup
+        GetAmenityListRequest request = new GetAmenityListRequest();
+        when(amenityService.getAmenityList())
+                .thenReturn(Collections.singletonList(new AmenityDto()));
+        // test
+        GetAmenityListResponse response = wsEndpoint.getAmenityListRequest(request);
         // verify result
         Assertions.assertNotNull(response);
         Assertions.assertEquals(1, response.getAmenityListDto().size());

@@ -9,5 +9,11 @@ public interface AmenityService {
 
     List<AmenityDto> findAmenitiesByHotelId(Long hotelId);
 
+    List<AmenityDto> getAmenityList();
+
+    AmenityDto createAmenity(AmenityDto amenityDto);
+
+    AmenityDto updateAmenity(AmenityDto amenityDto);
+
 
 }

@@ -75,7 +75,7 @@ public class HotelServiceImpl implements HotelService {
             result = hotelRepository.findAll(pageable);
         } else {
             // String.format will generate a string %hotelName% to use in the like clause
-            result = hotelRepository.findByHotelNameLikeIgnoreCase(String.format("%%%s%%", hotelName.trim()), pageable);
+            result = hotelRepository.findByHotelNameLikeIgnoreCaseOrderByHotelNameAsc(String.format("%%%s%%", hotelName.trim()), pageable);
         }
         HotelListDto hotelListDto = new HotelListDto();
         hotelListDto.getHotelDtoList().addAll(result.getContent().stream()
