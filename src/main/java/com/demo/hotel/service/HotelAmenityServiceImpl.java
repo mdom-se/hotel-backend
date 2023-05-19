@@ -30,7 +30,7 @@ public class HotelAmenityServiceImpl implements HotelAmenityService {
                 hotelAmenityDto.getHotelId(),
                 hotelAmenityDto.getAmenityId());
         if(hotelAmenity.isPresent()){
-            hotelAmenityRepository.deleteById(hotelAmenityDto.getHotelAmenityId());
+            hotelAmenityRepository.deleteById(hotelAmenity.get().getHotelAmenityId());
             result = true;
         }
         return result;

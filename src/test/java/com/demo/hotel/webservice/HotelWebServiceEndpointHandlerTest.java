@@ -1,12 +1,15 @@
 package com.demo.hotel.webservice;
 
 import com.demo.hotel.exception.InvalidHotelFieldException;
+import com.demo.hotel.model.Hotel;
 import com.demo.hotel.service.AmenityService;
 import com.demo.hotel.service.HotelAmenityService;
 import com.demo.hotel.service.HotelService;
+import com.demo.hotel.webservice.HotelWebServiceEndpointHandler.ErrorMessage;
 import com.demo.hotel.webservice.dto.AddHotelRequest;
 import com.demo.hotel.webservice.dto.AddHotelResponse;
 import com.demo.hotel.webservice.dto.HotelDto;
+import com.demo.hotel.webservice.dto.ResponseStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
@@ -15,8 +18,10 @@ import org.springframework.boot.test.autoconfigure.webservices.server.WebService
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.ws.test.server.MockWebServiceClient;
 import org.springframework.ws.test.server.RequestCreator;
 import org.springframework.ws.test.server.ResponseActions;
@@ -26,6 +31,8 @@ import org.springframework.xml.transform.StringSource;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -44,6 +51,7 @@ class HotelWebServiceEndpointHandlerTest {
     @MockBean
     private HotelService hotelService;
 
+    private final HotelWebServiceEndpointHandler standaloneSut = new HotelWebServiceEndpointHandler();
 
     private final Jaxb2Marshaller marshaller = marshaller();
 
@@ -94,7 +102,7 @@ class HotelWebServiceEndpointHandlerTest {
         when(hotelService.createHotel(any(HotelDto.class))).thenThrow(new RuntimeException("general-error"));
 
         AddHotelResponse expectedResult = new AddHotelResponse();
-        expectedResult.setMessage("general-error");
+        expectedResult.setMessage(ErrorMessage.UNEXPECTED.message());
         expectedResult.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         // test
         ResponseActions result = client.sendRequest(createRequest(request));
@@ -124,10 +132,56 @@ class HotelWebServiceEndpointHandlerTest {
         return new StringSource(sw.toString());
     }
 
+
     @Test
     void handleError() {
-        HotelWebServiceEndpointHandler test = new HotelWebServiceEndpointHandler();
-        Object result = test.handleError(null, new Exception());
+        Object result = standaloneSut.handleError(null, new Exception());
         Assertions.assertNull(result);
+    }
+
+    @Test
+    void handleError_notResponse() {
+        Object result = standaloneSut.handleError(Hotel.class, new Exception());
+        Assertions.assertNull(result);
+    }
+
+    @Test
+    void setResponseStatusByException_databaseConnection() {
+        ResponseStatus responseStatus = new ResponseStatus();
+        standaloneSut.setResponseStatusByException(responseStatus, new CannotCreateTransactionException("error"));
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), responseStatus.getStatusCode());
+        Assertions.assertEquals(ErrorMessage.DATABASE_CONNECTION.message(), responseStatus.getMessage());
+    }
+
+    @Test
+    void setResponseStatusByException_constraint() {
+        ResponseStatus responseStatus = new ResponseStatus();
+        standaloneSut.setResponseStatusByException(responseStatus, new DataIntegrityViolationException("error"));
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), responseStatus.getStatusCode());
+        Assertions.assertEquals(ErrorMessage.CONSTRAINT.message(), responseStatus.getMessage());
+    }
+
+    @Test
+    void setResponseStatusByException_connection() {
+        ResponseStatus responseStatus = new ResponseStatus();
+        standaloneSut.setResponseStatusByException(responseStatus, new ConnectException("error"));
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), responseStatus.getStatusCode());
+        Assertions.assertEquals(ErrorMessage.NETWORK.message(), responseStatus.getMessage());
+    }
+
+    @Test
+    void setResponseStatusByException_read_timeout() {
+        ResponseStatus responseStatus = new ResponseStatus();
+        standaloneSut.setResponseStatusByException(responseStatus, new SocketTimeoutException("error"));
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), responseStatus.getStatusCode());
+        Assertions.assertEquals(ErrorMessage.NETWORK.message(), responseStatus.getMessage());
+    }
+
+    @Test
+    void setResponseStatusByException_general() {
+        ResponseStatus responseStatus = new ResponseStatus();
+        standaloneSut.setResponseStatusByException(responseStatus, new Throwable("error"));
+        Assertions.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), responseStatus.getStatusCode());
+        Assertions.assertEquals(ErrorMessage.UNEXPECTED.message(), responseStatus.getMessage());
     }
 }
