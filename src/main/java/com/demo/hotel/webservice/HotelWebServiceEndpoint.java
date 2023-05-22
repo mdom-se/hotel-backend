@@ -3,6 +3,7 @@ package com.demo.hotel.webservice;
 import com.demo.hotel.service.AmenityService;
 import com.demo.hotel.service.HotelAmenityService;
 import com.demo.hotel.service.HotelService;
+import com.demo.hotel.validator.HotelValidator;
 import com.demo.hotel.webservice.dto.AddHotelAmenityRequest;
 import com.demo.hotel.webservice.dto.AddHotelAmenityResponse;
 import com.demo.hotel.webservice.dto.AddHotelRequest;
@@ -26,6 +27,7 @@ import com.demo.hotel.webservice.dto.HotelListDto;
 import com.demo.hotel.webservice.dto.UpdateHotelRequest;
 import com.demo.hotel.webservice.dto.UpdateHotelResponse;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -107,7 +109,7 @@ public class HotelWebServiceEndpoint {
     @ResponsePayload
     public GetHotelListResponse getHotelList(@RequestPayload GetHotelListRequest getHotelListRequest) {
         GetHotelListResponse response = new GetHotelListResponse();
-        PageRequest pageRequest = PageRequest.of(getHotelListRequest.getPage(), getHotelListRequest.getPageSize());
+        PageRequest pageRequest = PageRequest.of(getHotelListRequest.getPage(), getHotelListRequest.getPageSize(), Sort.by(HotelValidator.HOTEL_NAME_FIELD));
         HotelListDto hotelListDto = hotelService.getHotelList(getHotelListRequest.getHotelName(), pageRequest);
         response.setResult(hotelListDto);
         response.setStatusCode(OK.value());
