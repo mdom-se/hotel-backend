@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,6 +52,7 @@ public class HotelServiceImpl implements HotelService {
     }
 
     @Override
+    @Transactional
     public boolean deleteHotel(Long hotelId) {
         boolean deleted = false;
         if (hotelRepository.existsById(hotelId)) {
