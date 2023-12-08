@@ -1,0 +1,32 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: openjdk8
+    commands:
+      - echo "Installing Maven"
+      - apt-get update
+      - apt-get install -y maven
+
+  pre_build:
+    commands:
+      - echo "Nothing to do before build"
+
+  build:
+    commands:
+      - mvn clean install
+      - docker build -t $IMAGE_NAME .
+
+  post_build:
+    commands:
+      - echo "Build completed on $(date)"
+      - echo "Pushing the Docker image to Amazon ECR"
+      - echo $AWS_DEFAULT_REGION
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO_URL
+      - docker tag $IMAGE_NAME:latest $ECR_REPO_URL/$IMAGE_NAME:latest
+      - docker push $ECR_REPO_URL/$IMAGE_NAME:latest
+
+cache:
+  paths:
+    - '/root/.m2/**/*'
