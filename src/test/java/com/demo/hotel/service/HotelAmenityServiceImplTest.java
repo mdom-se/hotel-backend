@@ -1,20 +1,19 @@
 package com.demo.hotel.service;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import com.demo.hotel.mapper.HotelAmenityMapper;
 import com.demo.hotel.model.HotelAmenity;
 import com.demo.hotel.repository.HotelAmenityRepository;
 import com.demo.hotel.webservice.dto.HotelAmenityDto;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class HotelAmenityServiceImplTest {
