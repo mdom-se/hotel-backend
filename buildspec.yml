@@ -2,12 +2,16 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      java: openjdk8
+    # We are using the image: aws/codebuild/amazonlinux2-x86_64-standard:corretto8
+    # that's why we commented the below lines
+    #runtime-versions:
+      #java: openjdk8
     commands:
-      - echo "Installing Maven"
-      - apt-get update
-      - apt-get install -y maven
+      - java -version
+      - mvn -version
+      #- echo "Installing Maven"
+      #- apt-get update
+      #- apt-get install -y maven
 
   pre_build:
     commands:
